@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContentStatus {
+  DRAFT
+  GENERATING
+  REVIEW
+  APPROVED
+  REJECTED
+  SCHEDULED
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum Platform {
+  FACEBOOK
+  INSTAGRAM
+}
+
+enum PostType {
+  POSTER
+  CAROUSEL
+}
+
+enum ContentFormat {
+  PORTRAIT
+  SQUARE
+  STORY
+}
+
+enum TemplateStatus {
+  ACTIVE
+  ARCHIVED
+  INVALID
+}
+
+enum PublicationStatus {
+  SCHEDULED
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum JobLogStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED
+}
+
+enum SocialAccountStatus {
+  CONNECTED
+  DISCONNECTED
+  EXPIRED
+}
+
+model Brand {
+  id                 String         @id @default(cuid())
+  name               String
+  slug               String         @unique
+  description        String
+  defaultLanguage    String         @default("fr")
+  availableLanguages String[]
+  primaryColor       String
+  secondaryColor     String
+  accentColor        String
+  logoUrl            String
+  toneOfVoice        String
+  targetAudience     String
+  preferredCTAs      String[]
+  forbiddenWords     String[]
+  requiredTerms      String[]
+  defaultHashtags    String[]
+  visualGuidelines   String
+  isActive           Boolean        @default(true)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  templates          Template[]
+  contentDrafts      ContentDraft[]
+}
+
+model Template {
+  id            String         @id @default(cuid())
+  brandId       String
+  brand         Brand          @relation(fields: [brandId], references: [id])
+  name          String
+  type          PostType
+  format        ContentFormat
+  version       Int            @default(1)
+  status        TemplateStatus @default(ACTIVE)
+  sourcePath    String
+  configPath    String
+  previewPath   String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  contentDrafts ContentDraft[]
+
+  @@unique([brandId, sourcePath, version])
+}
+
+model ContentDraft {
+  id               String         @id @default(cuid())
+  brandId          String
+  brand            Brand          @relation(fields: [brandId], references: [id])
+  templateId       String
+  template         Template       @relation(fields: [templateId], references: [id])
+  type             PostType
+  topic            String
+  objective        String
+  language         String
+  generatedContent Json?
+  qualityReport    Json?
+  status           ContentStatus  @default(DRAFT)
+  version          Int            @default(1)
+  approvedAt       DateTime?
+  approvedBy       String?
+  rejectedAt       DateTime?
+  rejectedBy       String?
+  idempotencyKey   String?        @unique
+  pipelineState    Json?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  slides           ContentSlide[]
+  publications     Publication[]
+  jobLogs          JobLog[]
+}
+
+model ContentSlide {
+  id               String       @id @default(cuid())
+  contentDraftId   String
+  contentDraft     ContentDraft @relation(fields: [contentDraftId], references: [id], onDelete: Cascade)
+  position         Int
+  role             String
+  headline         String?
+  body             String?
+  imageDescription String?
+  altText          String?
+  renderedAssetUrl String?
+
+  @@unique([contentDraftId, position])
+}
+
+model Publication {
+  id              String            @id @default(cuid())
+  contentDraftId  String
+  contentDraft    ContentDraft      @relation(fields: [contentDraftId], references: [id])
+  platform        Platform
+  socialAccountId String
+  scheduledAt     DateTime
+  timezone        String
+  publishedAt     DateTime?
+  externalPostId  String?
+  externalPostUrl String?
+  status          PublicationStatus @default(SCHEDULED)
+  retryCount      Int               @default(0)
+  idempotencyKey  String            @unique
+  lastError       String?
+  lockedAt        DateTime?
+  lockedBy        String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  jobLogs         JobLog[]
+}
+
+model SocialAccount {
+  id             String              @id @default(cuid())
+  platform       Platform
+  externalId     String
+  displayName    String
+  accessTokenEnc String
+  tokenExpiresAt DateTime?
+  status         SocialAccountStatus @default(CONNECTED)
+  brandId        String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([platform, externalId])
+}
+
+model JobLog {
+  id              String        @id @default(cuid())
+  contentDraftId  String?
+  contentDraft    ContentDraft? @relation(fields: [contentDraftId], references: [id])
+  publicationId   String?
+  publication     Publication?  @relation(fields: [publicationId], references: [id])
+  provider        String
+  action          String
+  status          JobLogStatus
+  correlationId   String?
+  durationMs      Int?
+  requestSummary  Json?
+  responseSummary Json?
+  errorCode       String?
+  createdAt       DateTime      @default(now())
+}

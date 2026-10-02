@@ -1,0 +1,12 @@
+---
+description: Deterministic SVG rendering and Sharp export
+globs: "src/features/designs/**/*,src/server/services/**/*"
+alwaysApply: false
+---
+
+# Rendering
+
+- Overflow: normalize spaces → wrap lines → shrink font to min → refuse if still overflowing.
+- Forbidden: move text boxes, widen zones, shrink below min, change layout.
+- Images: png/jpeg/webp only; cover fit; no distortion; no upscale; reject SVG uploads.
+- Export exact dimensions from template config (1080x1350 or 1080x1080).

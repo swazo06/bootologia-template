@@ -1,0 +1,16 @@
+---
+description: Mandatory quality gates after each implementation phase
+alwaysApply: true
+---
+
+# Quality Gates
+
+After each phase, run and pass before continuing:
+
+1. `npm run type-check`
+2. `npm run lint`
+3. `npm run test`
+4. `npm run test:e2e` (when e2e is in scope for the phase)
+5. `npm run build`
+
+Do not mark a feature done if tests fail. Do not advance phases on red gates.

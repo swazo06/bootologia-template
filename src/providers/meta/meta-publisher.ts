@@ -1,0 +1,21 @@
+/** @deprecated Import from `@/providers/meta` instead. */
+export {
+  ALLOWED_PUBLISH_MIMES,
+  createMetaPublisher,
+  DryRunMetaPublisher,
+  getMetaPublisher,
+  GraphApiMetaPublisher,
+  GraphMetaPublisher,
+  inferPublishMime,
+  isMetaPublishingEnabled,
+  isTestRuntime,
+  mapMetaError,
+  metaPublisher,
+  MetaPublishError,
+  MockMetaPublisher,
+  publishRequestSchema,
+  type MetaPublisher,
+  type PublishMime,
+  type PublishRequest,
+  type PublishResult,
+} from "@/providers/meta/index";

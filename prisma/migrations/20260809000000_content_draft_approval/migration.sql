@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "ContentDraft" ADD COLUMN IF NOT EXISTS "approvedAt" TIMESTAMP(3);
+ALTER TABLE "ContentDraft" ADD COLUMN IF NOT EXISTS "approvedBy" TEXT;
+ALTER TABLE "ContentDraft" ADD COLUMN IF NOT EXISTS "rejectedAt" TIMESTAMP(3);
+ALTER TABLE "ContentDraft" ADD COLUMN IF NOT EXISTS "rejectedBy" TEXT;

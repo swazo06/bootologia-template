@@ -1,0 +1,1051 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": {
+    "name": "social-template-automation",
+    "displayName": "Social Template Automation",
+    "version": "1.0.0",
+    "language": "fr",
+    "description": "Application de génération, validation, programmation et publication de contenus Facebook et Instagram à partir de canevas graphiques verrouillés.",
+    "corePrinciple": "L'intelligence artificielle remplit le canevas. Elle ne crée jamais le canevas."
+  },
+  "cursor": {
+    "recommendedMode": "agent",
+    "executionStrategy": [
+      "Lire entièrement cette spécification avant de modifier le code.",
+      "Créer d'abord le plan d'implémentation et l'arborescence.",
+      "Implémenter module par module.",
+      "Après chaque module, exécuter type-check, lint et tests.",
+      "Ne jamais considérer une fonctionnalité comme terminée si les tests échouent."
+    ],
+    "masterPrompt": "Tu es un ingénieur logiciel senior spécialisé en automatisation, génération de contenu, rendu graphique déterministe et publication sur les réseaux sociaux. Construis l'application décrite dans ce fichier JSON. Respecte strictement toutes les contraintes. L'application ne doit jamais inventer une mise en page. Les visuels sont créés uniquement à partir de templates SVG verrouillés et validés. L'IA génère uniquement du contenu structuré pour remplir les placeholders. Commence par produire un plan d'implémentation détaillé, puis implémente le projet par étapes. Après chaque étape, lance les vérifications prévues dans la section qualityGates."
+  },
+  "stack": {
+    "runtime": "Node.js 20+",
+    "framework": "Next.js App Router",
+    "language": "TypeScript strict",
+    "ui": [
+      "Tailwind CSS",
+      "shadcn/ui"
+    ],
+    "database": "PostgreSQL",
+    "orm": "Prisma",
+    "authentication": "Supabase Auth ou Auth.js",
+    "storage": "Supabase Storage ou stockage S3 compatible",
+    "imageProcessing": "Sharp",
+    "validation": "Zod",
+    "forms": "React Hook Form",
+    "testing": [
+      "Vitest",
+      "Playwright"
+    ],
+    "scheduler": "n8n ou worker cron interne",
+    "publishing": "Meta Graph API",
+    "aiProvider": "Adapter interchangeable compatible avec une sortie JSON structurée"
+  },
+  "nonNegotiableRules": [
+    "La mise en page ne doit jamais être générée par l'IA.",
+    "Les positions, couleurs, polices, dimensions, marges et composants graphiques sont définis dans les templates.",
+    "Les templates sources ne doivent jamais être modifiés pendant la génération.",
+    "Chaque rendu doit utiliser une copie logique ou un rendu dérivé du template source.",
+    "Aucun texte ne doit être intégré dans une image générée par IA.",
+    "Aucun prix, chiffre, témoignage, client, résultat ou statistique ne doit être inventé.",
+    "Un contenu ne peut pas être publié si son statut n'est pas APPROVED.",
+    "Toute opération externe doit être idempotente.",
+    "Les tokens et secrets ne doivent jamais apparaître dans les logs.",
+    "Toutes les entrées et sorties externes doivent être validées avec Zod.",
+    "Le mode DRY_RUN doit être disponible pour simuler les publications.",
+    "Les tests ne doivent jamais publier réellement sur Facebook ou Instagram."
+  ],
+  "supportedContent": {
+    "platforms": [
+      "FACEBOOK",
+      "INSTAGRAM"
+    ],
+    "postTypes": [
+      "POSTER",
+      "CAROUSEL"
+    ],
+    "formats": {
+      "PORTRAIT": {
+        "width": 1080,
+        "height": 1350,
+        "ratio": "4:5"
+      },
+      "SQUARE": {
+        "width": 1080,
+        "height": 1080,
+        "ratio": "1:1"
+      },
+      "STORY": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16",
+        "phase": "export-only"
+      }
+    },
+    "languages": [
+      "fr",
+      "ar",
+      "darija"
+    ]
+  },
+  "projectStructure": {
+    "folders": [
+      "src/app",
+      "src/components",
+      "src/features/brands",
+      "src/features/templates",
+      "src/features/content-generation",
+      "src/features/designs",
+      "src/features/approvals",
+      "src/features/calendar",
+      "src/features/publishing",
+      "src/features/integrations",
+      "src/lib/auth",
+      "src/lib/database",
+      "src/lib/encryption",
+      "src/lib/logging",
+      "src/lib/validation",
+      "src/providers/ai",
+      "src/providers/meta",
+      "src/providers/storage",
+      "src/providers/scheduler",
+      "src/server/actions",
+      "src/server/services",
+      "src/server/repositories",
+      "src/types",
+      "templates/brands",
+      "tests/unit",
+      "tests/integration",
+      "tests/e2e",
+      "docs"
+    ]
+  },
+  "modules": {
+    "TemplateRegistry": {
+      "responsibilities": [
+        "Charger les templates disponibles.",
+        "Associer les templates à une marque.",
+        "Valider la cohérence entre le fichier SVG et le fichier config.json.",
+        "Vérifier que tous les placeholders déclarés existent.",
+        "Empêcher l'utilisation d'un template archivé ou invalide."
+      ]
+    },
+    "TemplateRenderer": {
+      "responsibilities": [
+        "Remplacer les placeholders de texte.",
+        "Injecter les images.",
+        "Gérer les retours à la ligne.",
+        "Appliquer la taille de police autorisée.",
+        "Convertir le SVG final en PNG ou JPG avec Sharp.",
+        "Garantir des dimensions de sortie exactes.",
+        "Produire une erreur explicite si le rendu est impossible."
+      ]
+    },
+    "ContentGenerator": {
+      "responsibilities": [
+        "Construire le prompt à partir de la marque, du canevas et du brief.",
+        "Demander uniquement du JSON structuré.",
+        "Ne jamais demander une nouvelle mise en page.",
+        "Retourner les champs correspondant exactement aux placeholders."
+      ]
+    },
+    "ContentValidator": {
+      "responsibilities": [
+        "Valider la longueur des textes.",
+        "Valider le nombre de mots.",
+        "Valider le nombre de lignes.",
+        "Détecter les champs manquants.",
+        "Détecter les affirmations non vérifiables.",
+        "Détecter les mots interdits.",
+        "Vérifier les termes obligatoires.",
+        "Bloquer le passage au statut REVIEW en cas d'erreur critique."
+      ]
+    },
+    "TextFitService": {
+      "responsibilities": [
+        "Mesurer les dimensions du texte.",
+        "Effectuer les retours à la ligne.",
+        "Réduire la taille de police uniquement dans la plage autorisée.",
+        "Refuser le contenu si le texte ne rentre toujours pas.",
+        "Ne jamais modifier les coordonnées ou la taille de la zone de texte."
+      ]
+    },
+    "ImageCropService": {
+      "responsibilities": [
+        "Vérifier le ratio minimal.",
+        "Recadrer sans déformation.",
+        "Respecter la zone focale.",
+        "Conserver les dimensions exactes.",
+        "Refuser les fichiers non supportés ou trop petits."
+      ]
+    },
+    "DesignGenerationPipeline": {
+      "steps": [
+        "BRIEF_VALIDATION",
+        "CONTENT_GENERATION",
+        "CONTENT_QA",
+        "ASSET_VALIDATION",
+        "TEXT_FIT",
+        "TEMPLATE_RENDER",
+        "IMAGE_EXPORT",
+        "STORAGE_UPLOAD",
+        "PREVIEW_READY"
+      ],
+      "requirements": [
+        "Chaque étape doit être journalisée.",
+        "Chaque étape doit pouvoir reprendre après une erreur.",
+        "Les étapes déjà réussies ne doivent pas être répétées sans nécessité.",
+        "Une clé d'idempotence doit empêcher les générations en double.",
+        "Le pipeline doit permettre de relancer une seule slide.",
+        "Le pipeline doit conserver l'historique des versions."
+      ]
+    },
+    "SocialPostScheduler": {
+      "responsibilities": [
+        "Enregistrer les dates en UTC.",
+        "Afficher les dates dans la timezone de l'utilisateur.",
+        "Réserver les publications à exécuter.",
+        "Empêcher deux workers de publier le même contenu.",
+        "Gérer les retries temporaires.",
+        "Annuler les retries pour les erreurs définitives."
+      ]
+    },
+    "MetaPublisher": {
+      "responsibilities": [
+        "Publier une image unique.",
+        "Publier un carrousel.",
+        "Valider les fichiers avant publication.",
+        "Vérifier le statut du compte.",
+        "Vérifier le token.",
+        "Enregistrer l'identifiant externe.",
+        "Fonctionner en DRY_RUN.",
+        "Être entièrement mockable."
+      ]
+    }
+  },
+  "templateSystem": {
+    "rootPath": "templates/brands",
+    "exampleTree": {
+      "botoschool": {
+        "poster-service-v1": [
+          "template.svg",
+          "config.json",
+          "preview.png"
+        ],
+        "carousel-educational-v1": [
+          "slide-01.svg",
+          "slide-02.svg",
+          "slide-03.svg",
+          "slide-04.svg",
+          "slide-05.svg",
+          "slide-06.svg",
+          "config.json",
+          "preview.png"
+        ]
+      }
+    },
+    "allowedDynamicFields": [
+      "label",
+      "headline",
+      "subtitle",
+      "body",
+      "cta",
+      "mainImage",
+      "caption",
+      "hashtags",
+      "altText"
+    ],
+    "lockedProperties": [
+      "canvasWidth",
+      "canvasHeight",
+      "elementCoordinates",
+      "brandColors",
+      "fontFamilies",
+      "fontWeights",
+      "fontSizeRanges",
+      "margins",
+      "safeZones",
+      "logoPosition",
+      "logoSize",
+      "imageFrames",
+      "decorativeElements",
+      "slideNumberPosition"
+    ],
+    "placeholderSyntax": "{{FIELD_NAME}}",
+    "forbiddenUserControls": [
+      "freeColorPicker",
+      "freeFontPicker",
+      "freeElementPositioning",
+      "freeLayoutGeneration",
+      "freeDesignPrompt",
+      "unrestrictedTemplateEditing"
+    ]
+  },
+  "templateConfigExample": {
+    "id": "poster-service-v1",
+    "brand": "botoschool",
+    "name": "Affiche service principale",
+    "type": "POSTER",
+    "status": "ACTIVE",
+    "version": 1,
+    "format": "PORTRAIT",
+    "dimensions": {
+      "width": 1080,
+      "height": 1350
+    },
+    "source": {
+      "svg": "template.svg",
+      "preview": "preview.png"
+    },
+    "fonts": [
+      {
+        "family": "Inter",
+        "required": true,
+        "fallback": "Arial"
+      }
+    ],
+    "colors": {
+      "background": "#FFFFFF",
+      "primary": "#111111",
+      "secondary": "#666666",
+      "accent": "#D7FF00"
+    },
+    "fields": {
+      "label": {
+        "type": "text",
+        "required": true,
+        "placeholder": "{{LABEL}}",
+        "maxCharacters": 18,
+        "maxWords": 3,
+        "maxLines": 1,
+        "fontSize": {
+          "default": 24,
+          "min": 22,
+          "max": 24
+        }
+      },
+      "headline": {
+        "type": "text",
+        "required": true,
+        "placeholder": "{{HEADLINE}}",
+        "maxCharacters": 42,
+        "maxWords": 7,
+        "maxLines": 3,
+        "fontSize": {
+          "default": 72,
+          "min": 58,
+          "max": 72
+        }
+      },
+      "subtitle": {
+        "type": "text",
+        "required": true,
+        "placeholder": "{{SUBTITLE}}",
+        "maxCharacters": 110,
+        "maxWords": 20,
+        "maxLines": 4,
+        "fontSize": {
+          "default": 32,
+          "min": 26,
+          "max": 32
+        }
+      },
+      "cta": {
+        "type": "text",
+        "required": true,
+        "placeholder": "{{CTA}}",
+        "maxCharacters": 20,
+        "maxWords": 4,
+        "maxLines": 1,
+        "fontSize": {
+          "default": 26,
+          "min": 22,
+          "max": 26
+        }
+      },
+      "mainImage": {
+        "type": "image",
+        "required": true,
+        "placeholder": "{{MAIN_IMAGE}}",
+        "expectedRatio": "4:5",
+        "minimumWidth": 800,
+        "minimumHeight": 1000,
+        "fit": "cover",
+        "allowUpscale": false
+      }
+    },
+    "export": {
+      "format": "png",
+      "quality": 100,
+      "width": 1080,
+      "height": 1350
+    }
+  },
+  "carouselTemplates": {
+    "educationalV1": {
+      "slideCount": 6,
+      "slideRoles": [
+        {
+          "position": 1,
+          "role": "HOOK",
+          "purpose": "Créer une accroche forte et immédiatement compréhensible."
+        },
+        {
+          "position": 2,
+          "role": "PROBLEM",
+          "purpose": "Présenter le problème principal."
+        },
+        {
+          "position": 3,
+          "role": "EXPLANATION",
+          "purpose": "Expliquer le contexte ou la cause."
+        },
+        {
+          "position": 4,
+          "role": "SOLUTION",
+          "purpose": "Présenter la solution."
+        },
+        {
+          "position": 5,
+          "role": "BENEFIT",
+          "purpose": "Présenter les bénéfices."
+        },
+        {
+          "position": 6,
+          "role": "CTA",
+          "purpose": "Terminer par un appel à l'action."
+        }
+      ],
+      "globalRules": [
+        "Le logo reste à la même position sur toutes les slides.",
+        "Les marges restent identiques.",
+        "Les couleurs restent identiques.",
+        "La typographie reste identique.",
+        "Le numéro de slide reste au même emplacement.",
+        "Chaque slide contient une seule idée principale.",
+        "Toutes les slides doivent avoir les mêmes dimensions."
+      ]
+    }
+  },
+  "brandModel": {
+    "requiredFields": [
+      "id",
+      "name",
+      "slug",
+      "description",
+      "defaultLanguage",
+      "availableLanguages",
+      "primaryColor",
+      "secondaryColor",
+      "accentColor",
+      "logoUrl",
+      "toneOfVoice",
+      "targetAudience",
+      "preferredCTAs",
+      "forbiddenWords",
+      "requiredTerms",
+      "defaultHashtags",
+      "visualGuidelines",
+      "isActive"
+    ]
+  },
+  "contentGeneration": {
+    "input": {
+      "requiredFields": [
+        "brandId",
+        "templateId",
+        "topic",
+        "objective",
+        "targetAudience",
+        "language"
+      ],
+      "optionalFields": [
+        "offer",
+        "mainMessage",
+        "cta",
+        "requiredInformation",
+        "forbiddenInformation",
+        "additionalInstructions",
+        "imageSource"
+      ]
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "headline",
+        "subtitle",
+        "cta",
+        "caption",
+        "hashtags",
+        "imageDescription",
+        "altText"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "headline": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "cta": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "hashtags": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 8,
+          "items": {
+            "type": "string"
+          }
+        },
+        "imageDescription": {
+          "type": "string"
+        },
+        "altText": {
+          "type": "string"
+        }
+      }
+    },
+    "systemPrompt": "Tu es un rédacteur spécialisé dans les publications Facebook et Instagram. Tu ne dois pas créer, modifier ou proposer une mise en page graphique. La mise en page est définie dans un canevas verrouillé. Ta mission consiste uniquement à produire les valeurs textuelles et descriptives nécessaires pour remplir les placeholders autorisés. Tu dois respecter exactement les limites du template. Tu ne dois inventer aucune donnée, aucun prix, aucun chiffre, aucun témoignage, aucun client, aucune statistique ni aucun résultat. Retourne uniquement un objet JSON valide correspondant au schéma demandé.",
+    "userPromptTemplate": "Marque: {{BRAND_NAME}}\nDescription: {{BRAND_DESCRIPTION}}\nPublic cible: {{TARGET_AUDIENCE}}\nTon: {{TONE_OF_VOICE}}\nSujet: {{TOPIC}}\nObjectif: {{OBJECTIVE}}\nLangue: {{LANGUAGE}}\nInformations obligatoires: {{REQUIRED_INFORMATION}}\nInformations interdites: {{FORBIDDEN_INFORMATION}}\nContraintes du canevas: {{TEMPLATE_CONSTRAINTS}}\nGénère uniquement le contenu structuré destiné aux placeholders.",
+    "hardRules": [
+      "Le label doit respecter maxCharacters, maxWords et maxLines.",
+      "Le titre doit respecter maxCharacters, maxWords et maxLines.",
+      "Le sous-titre doit respecter maxCharacters, maxWords et maxLines.",
+      "Le CTA doit respecter maxCharacters, maxWords et maxLines.",
+      "La légende doit rester inférieure ou égale à 900 caractères.",
+      "Le nombre de hashtags doit être compris entre 5 et 8.",
+      "Aucune instruction graphique ne doit apparaître dans les textes.",
+      "Le prompt d'image ne doit demander aucun texte dans l'image.",
+      "Le prompt d'image ne doit pas demander de recréer un logo.",
+      "Les mots interdits doivent être absents.",
+      "Les termes obligatoires doivent être présents."
+    ]
+  },
+  "qualityReportSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "passed",
+      "spellingIssues",
+      "unsupportedClaims",
+      "brandViolations",
+      "duplicatedIdeas",
+      "overflowRisks",
+      "recommendations"
+    ],
+    "properties": {
+      "passed": {
+        "type": "boolean"
+      },
+      "spellingIssues": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "unsupportedClaims": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "brandViolations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "duplicatedIdeas": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "overflowRisks": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "severity"
+          ],
+          "properties": {
+            "slidePosition": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "field": {
+              "type": "string"
+            },
+            "severity": {
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH"
+              ]
+            }
+          }
+        }
+      },
+      "recommendations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "workflow": {
+    "steps": [
+      {
+        "id": 1,
+        "name": "SELECT_BRAND",
+        "label": "Choisir la page ou la marque"
+      },
+      {
+        "id": 2,
+        "name": "SELECT_TEMPLATE",
+        "label": "Choisir le canevas graphique verrouillé"
+      },
+      {
+        "id": 3,
+        "name": "ENTER_BRIEF",
+        "label": "Saisir le sujet et l'objectif"
+      },
+      {
+        "id": 4,
+        "name": "SELECT_POST_TYPE",
+        "label": "Choisir affiche ou carrousel"
+      },
+      {
+        "id": 5,
+        "name": "GENERATE_CONTENT",
+        "label": "Générer uniquement le contenu"
+      },
+      {
+        "id": 6,
+        "name": "VALIDATE_CONTENT",
+        "label": "Valider le contenu et les dimensions"
+      },
+      {
+        "id": 7,
+        "name": "RENDER_TEMPLATE",
+        "label": "Remplir le canevas et générer le visuel"
+      },
+      {
+        "id": 8,
+        "name": "REVIEW",
+        "label": "Prévisualiser et approuver"
+      },
+      {
+        "id": 9,
+        "name": "SCHEDULE",
+        "label": "Choisir la date et l'heure"
+      },
+      {
+        "id": 10,
+        "name": "PUBLISH",
+        "label": "Publier sur Facebook et Instagram"
+      }
+    ],
+    "statusTransitions": {
+      "DRAFT": [
+        "GENERATING",
+        "CANCELLED"
+      ],
+      "GENERATING": [
+        "REVIEW",
+        "FAILED"
+      ],
+      "REVIEW": [
+        "APPROVED",
+        "REJECTED"
+      ],
+      "REJECTED": [
+        "DRAFT"
+      ],
+      "APPROVED": [
+        "SCHEDULED",
+        "PROCESSING"
+      ],
+      "SCHEDULED": [
+        "PROCESSING",
+        "CANCELLED"
+      ],
+      "PROCESSING": [
+        "PUBLISHED",
+        "FAILED"
+      ],
+      "FAILED": [
+        "SCHEDULED",
+        "CANCELLED"
+      ],
+      "PUBLISHED": []
+    }
+  },
+  "databaseEntities": {
+    "Brand": [
+      "id",
+      "name",
+      "slug",
+      "description",
+      "defaultLanguage",
+      "availableLanguages",
+      "primaryColor",
+      "secondaryColor",
+      "accentColor",
+      "logoUrl",
+      "toneOfVoice",
+      "targetAudience",
+      "preferredCTAs",
+      "forbiddenWords",
+      "requiredTerms",
+      "defaultHashtags",
+      "visualGuidelines",
+      "isActive",
+      "createdAt",
+      "updatedAt"
+    ],
+    "Template": [
+      "id",
+      "brandId",
+      "name",
+      "type",
+      "format",
+      "version",
+      "status",
+      "sourcePath",
+      "configPath",
+      "previewPath",
+      "createdAt",
+      "updatedAt"
+    ],
+    "ContentDraft": [
+      "id",
+      "brandId",
+      "templateId",
+      "type",
+      "topic",
+      "objective",
+      "language",
+      "generatedContent",
+      "qualityReport",
+      "status",
+      "version",
+      "createdAt",
+      "updatedAt"
+    ],
+    "ContentSlide": [
+      "id",
+      "contentDraftId",
+      "position",
+      "role",
+      "headline",
+      "body",
+      "imageDescription",
+      "altText",
+      "renderedAssetUrl"
+    ],
+    "Publication": [
+      "id",
+      "contentDraftId",
+      "platform",
+      "socialAccountId",
+      "scheduledAt",
+      "timezone",
+      "publishedAt",
+      "externalPostId",
+      "externalPostUrl",
+      "status",
+      "retryCount",
+      "idempotencyKey",
+      "lastError",
+      "createdAt",
+      "updatedAt"
+    ],
+    "JobLog": [
+      "id",
+      "contentDraftId",
+      "publicationId",
+      "provider",
+      "action",
+      "status",
+      "requestSummary",
+      "responseSummary",
+      "errorCode",
+      "createdAt"
+    ]
+  },
+  "renderingRules": {
+    "text": {
+      "overflowStrategy": [
+        "normaliser les espaces",
+        "appliquer les retours à la ligne",
+        "réduire la taille de police jusqu'à la valeur minimale autorisée",
+        "refuser le rendu si le texte dépasse toujours la zone"
+      ],
+      "forbiddenStrategies": [
+        "déplacer la zone de texte",
+        "augmenter la largeur de la zone",
+        "réduire la taille sous le minimum",
+        "modifier la mise en page"
+      ]
+    },
+    "images": {
+      "allowedMimeTypes": [
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+      ],
+      "forbiddenMimeTypes": [
+        "image/svg+xml"
+      ],
+      "fit": "cover",
+      "allowDistortion": false,
+      "allowUpscale": false,
+      "requirePublicUrlForPublishing": true
+    },
+    "export": {
+      "poster": [
+        "1080x1350",
+        "1080x1080"
+      ],
+      "carousel": [
+        "1080x1350",
+        "1080x1080"
+      ],
+      "requireSameDimensionsForAllSlides": true,
+      "requireAllSlidesBeforeScheduling": true
+    }
+  },
+  "scheduler": {
+    "pollingInterval": "1 minute",
+    "sourceOfTruth": "Publication table",
+    "selectionRule": "status = SCHEDULED and scheduledAt <= now",
+    "locking": "transactional row locking with SKIP LOCKED when available",
+    "retryPolicy": [
+      {
+        "attempt": 1,
+        "delayMinutes": 1
+      },
+      {
+        "attempt": 2,
+        "delayMinutes": 5
+      },
+      {
+        "attempt": 3,
+        "delayMinutes": 15
+      }
+    ],
+    "nonRetryableErrors": [
+      "PERMISSION_DENIED",
+      "ACCOUNT_DISCONNECTED",
+      "CONTENT_DELETED",
+      "FILE_NOT_ACCESSIBLE",
+      "VALIDATION_REJECTED",
+      "TOKEN_PERMANENTLY_INVALID"
+    ]
+  },
+  "security": {
+    "requirements": [
+      "Chiffrer les tokens au repos avec AES-GCM.",
+      "Stocker la clé de chiffrement uniquement côté serveur.",
+      "Valider le paramètre OAuth state.",
+      "Protéger les formulaires contre CSRF.",
+      "Appliquer du rate limiting.",
+      "Contrôler les rôles côté serveur.",
+      "Nettoyer les logs.",
+      "Valider les URLs.",
+      "Protéger contre SSRF.",
+      "Vérifier le type MIME réel.",
+      "Limiter la taille des fichiers.",
+      "Signer les appels internes.",
+      "Ne jamais exposer de secret côté client."
+    ]
+  },
+  "apiContracts": {
+    "renderTemplate": {
+      "method": "POST",
+      "path": "/api/designs/render",
+      "request": {
+        "templateId": "string",
+        "contentDraftId": "string",
+        "version": "number"
+      },
+      "response": {
+        "jobId": "string",
+        "status": "QUEUED"
+      }
+    },
+    "approveContent": {
+      "method": "POST",
+      "path": "/api/content/:id/approve",
+      "request": {
+        "expectedVersion": "number"
+      },
+      "response": {
+        "status": "APPROVED",
+        "approvedAt": "ISO-8601 datetime"
+      }
+    },
+    "schedulePublication": {
+      "method": "POST",
+      "path": "/api/publications/schedule",
+      "request": {
+        "contentDraftId": "string",
+        "platforms": [
+          "FACEBOOK",
+          "INSTAGRAM"
+        ],
+        "scheduledAt": "ISO-8601 datetime",
+        "timezone": "IANA timezone"
+      },
+      "response": {
+        "publicationIds": [
+          "string"
+        ],
+        "status": "SCHEDULED"
+      }
+    }
+  },
+  "qualityGates": {
+    "commands": [
+      "npm run type-check",
+      "npm run lint",
+      "npm run test",
+      "npm run test:e2e",
+      "npm run build"
+    ],
+    "requiredOutcomes": [
+      "Aucune erreur TypeScript.",
+      "Aucune erreur lint.",
+      "Tous les tests unitaires réussissent.",
+      "Tous les tests d'intégration réussissent.",
+      "Le test end-to-end principal réussit.",
+      "Le build de production réussit.",
+      "Aucun secret n'est présent dans le dépôt."
+    ]
+  },
+  "testPlan": {
+    "unitTests": [
+      {
+        "name": "template-config-validation",
+        "assertions": [
+          "Chaque placeholder déclaré existe dans le SVG.",
+          "Chaque placeholder du SVG est déclaré dans config.json.",
+          "Les dimensions sont positives.",
+          "Les tailles de police respectent min <= default <= max."
+        ]
+      },
+      {
+        "name": "content-length-validation",
+        "assertions": [
+          "Un titre trop long est refusé.",
+          "Un CTA trop long est refusé.",
+          "Un champ obligatoire vide est refusé."
+        ]
+      },
+      {
+        "name": "text-fit",
+        "assertions": [
+          "Le moteur retourne à la ligne sans déplacer la zone.",
+          "Le moteur réduit la police uniquement jusqu'au minimum.",
+          "Le moteur refuse le rendu si le texte ne rentre toujours pas."
+        ]
+      },
+      {
+        "name": "deterministic-layout",
+        "assertions": [
+          "Deux contenus différents utilisent les mêmes coordonnées.",
+          "Deux contenus différents utilisent les mêmes couleurs.",
+          "Deux contenus différents utilisent les mêmes familles de polices.",
+          "Deux contenus différents utilisent les mêmes dimensions de zones."
+        ]
+      },
+      {
+        "name": "status-transitions",
+        "assertions": [
+          "REVIEW peut passer à APPROVED.",
+          "DRAFT ne peut pas passer directement à PUBLISHED.",
+          "PUBLISHED est terminal."
+        ]
+      },
+      {
+        "name": "idempotency",
+        "assertions": [
+          "La même clé ne crée pas deux rendus.",
+          "La même clé ne crée pas deux publications."
+        ]
+      }
+    ],
+    "integrationTests": [
+      "Création d'une affiche avec provider IA mocké.",
+      "Création d'un carrousel de six slides.",
+      "Rejet d'un carrousel lorsqu'une slide manque.",
+      "Nouvelle génération d'une seule slide.",
+      "Échec de rendu puis reprise sans répéter les étapes réussies.",
+      "Publication Facebook simulée.",
+      "Publication Instagram simulée.",
+      "Token expiré.",
+      "Fichier inaccessible.",
+      "Publication déjà exécutée."
+    ],
+    "e2eScenario": [
+      "Connexion",
+      "Choix de la marque",
+      "Choix du template",
+      "Saisie du brief",
+      "Choix du type carrousel",
+      "Génération",
+      "Validation",
+      "Rendu",
+      "Aperçu",
+      "Approbation",
+      "Programmation",
+      "Publication en mode DRY_RUN",
+      "Statut PUBLISHED simulé"
+    ]
+  },
+  "acceptanceCriteria": [
+    "L'utilisateur ne peut pas déplacer les éléments graphiques.",
+    "L'utilisateur ne peut pas modifier librement les couleurs.",
+    "L'utilisateur ne peut pas choisir librement les polices.",
+    "L'utilisateur ne peut pas demander une nouvelle mise en page.",
+    "Deux publications utilisant le même template gardent exactement la même structure.",
+    "Un texte qui dépasse les limites est refusé ou régénéré.",
+    "Une image qui ne respecte pas les contraintes est refusée ou recadrée.",
+    "Une publication non approuvée ne peut jamais être programmée.",
+    "Le système conserve les versions.",
+    "Le système journalise les erreurs.",
+    "Le système peut fonctionner sans connexion réelle à Meta grâce aux mocks."
+  ],
+  "deliverables": [
+    "Application Next.js complète.",
+    "Schéma Prisma.",
+    "Migrations.",
+    "Templates SVG d'exemple.",
+    "Configs JSON d'exemple.",
+    "Providers mockés.",
+    "Tests unitaires.",
+    "Tests d'intégration.",
+    "Test Playwright.",
+    "Documentation d'installation.",
+    "Documentation de création d'un nouveau template.",
+    "Documentation de connexion Meta.",
+    "Workflow n8n importable si n8n est utilisé.",
+    "Fichier .env.example sans secret."
+  ]
+}

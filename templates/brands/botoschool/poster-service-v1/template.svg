@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <rect width="1080" height="1350" fill="#FFFFFF"/>
+  <rect x="64" y="64" width="952" height="720" fill="#F3F3F3"/>
+  <image href="{{MAIN_IMAGE}}" x="64" y="64" width="952" height="720" preserveAspectRatio="xMidYMid slice"/>
+  <text x="64" y="860" fill="#111111" font-family="Inter, Arial" font-size="24">{{LABEL}}</text>
+  <text x="64" y="960" fill="#111111" font-family="Inter, Arial" font-size="72" font-weight="700">{{HEADLINE}}</text>
+  <text x="64" y="1080" fill="#666666" font-family="Inter, Arial" font-size="32">{{SUBTITLE}}</text>
+  <rect x="64" y="1220" width="280" height="64" rx="8" fill="#D7FF00"/>
+  <text x="84" y="1262" fill="#111111" font-family="Inter, Arial" font-size="26" font-weight="600">{{CTA}}</text>
+  <circle cx="980" cy="80" r="28" fill="#111111"/>
+</svg>

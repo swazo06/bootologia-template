@@ -1,0 +1,100 @@
+{
+  "id": "poster-service-v1",
+  "brand": "botoschool",
+  "name": "Affiche service principale",
+  "type": "POSTER",
+  "status": "ACTIVE",
+  "version": 1,
+  "format": "PORTRAIT",
+  "dimensions": {
+    "width": 1080,
+    "height": 1350
+  },
+  "source": {
+    "svg": "template.svg",
+    "preview": "preview.png"
+  },
+  "fonts": [
+    {
+      "family": "Inter",
+      "required": true,
+      "fallback": "Arial"
+    }
+  ],
+  "colors": {
+    "background": "#FFFFFF",
+    "primary": "#111111",
+    "secondary": "#666666",
+    "accent": "#D7FF00"
+  },
+  "fields": {
+    "label": {
+      "type": "text",
+      "required": true,
+      "placeholder": "{{LABEL}}",
+      "maxCharacters": 18,
+      "maxWords": 3,
+      "maxLines": 1,
+      "fontSize": {
+        "default": 24,
+        "min": 22,
+        "max": 24
+      }
+    },
+    "headline": {
+      "type": "text",
+      "required": true,
+      "placeholder": "{{HEADLINE}}",
+      "maxCharacters": 42,
+      "maxWords": 7,
+      "maxLines": 3,
+      "fontSize": {
+        "default": 72,
+        "min": 58,
+        "max": 72
+      }
+    },
+    "subtitle": {
+      "type": "text",
+      "required": true,
+      "placeholder": "{{SUBTITLE}}",
+      "maxCharacters": 110,
+      "maxWords": 20,
+      "maxLines": 4,
+      "fontSize": {
+        "default": 32,
+        "min": 26,
+        "max": 32
+      }
+    },
+    "cta": {
+      "type": "text",
+      "required": true,
+      "placeholder": "{{CTA}}",
+      "maxCharacters": 20,
+      "maxWords": 4,
+      "maxLines": 1,
+      "fontSize": {
+        "default": 26,
+        "min": 22,
+        "max": 26
+      }
+    },
+    "mainImage": {
+      "type": "image",
+      "required": true,
+      "placeholder": "{{MAIN_IMAGE}}",
+      "expectedRatio": "4:5",
+      "minimumWidth": 800,
+      "minimumHeight": 1000,
+      "fit": "cover",
+      "allowUpscale": false
+    }
+  },
+  "export": {
+    "format": "png",
+    "quality": 100,
+    "width": 1080,
+    "height": 1350
+  }
+}

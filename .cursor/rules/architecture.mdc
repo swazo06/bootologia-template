@@ -1,0 +1,14 @@
+---
+description: Core architecture — locked templates, AI fills placeholders only
+alwaysApply: true
+---
+
+# Architecture
+
+- Core principle: the AI fills the canvas; it never creates the canvas.
+- Never generate free layouts, free color/font pickers, or free element positioning.
+- Visuals come only from locked SVG templates + `config.json` under `templates/brands`.
+- Allowed dynamic fields only: label, headline, subtitle, body, cta, mainImage, caption, hashtags, altText.
+- Never invent prices, numbers, testimonials, clients, results, or statistics.
+- Publish only when content status is `APPROVED`. External ops must be idempotent.
+- Prefer feature modules under `src/features/*` and providers under `src/providers/*`.

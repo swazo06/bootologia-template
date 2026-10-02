@@ -1,3 +1,16 @@
+---
+description: "Social Template Automation — AI fills locked SVG templates only"
+alwaysApply: true
+---
+
+# Project
+
+Build Social Template Automation from the JSON specification.
+
+Core rule: the AI fills locked SVG canvases and never invents layout.
+
+After each phase run: type-check, lint, test (and e2e/build when in scope).
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

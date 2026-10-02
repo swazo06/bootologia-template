@@ -1,0 +1,31 @@
+{
+  "name": "Social Template Automation — Publish Poller (reference)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cron-publish",
+        "httpMethod": "POST"
+      },
+      "name": "Cron Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.APP_URL}}/api/cron/publish",
+        "method": "POST"
+      },
+      "name": "Call Internal Scheduler",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 0]
+    }
+  ],
+  "connections": {
+    "Cron Trigger": {
+      "main": [[{ "node": "Call Internal Scheduler", "type": "main", "index": 0 }]]
+    }
+  },
+  "notes": "Optional n8n wrapper. Primary scheduler is the internal Next.js cron worker."
+}

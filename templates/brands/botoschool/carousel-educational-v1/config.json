@@ -1,0 +1,72 @@
+{
+  "id": "carousel-educational-v1",
+  "brand": "botoschool",
+  "name": "Carrousel éducatif",
+  "type": "CAROUSEL",
+  "status": "ACTIVE",
+  "version": 1,
+  "format": "PORTRAIT",
+  "dimensions": {
+    "width": 1080,
+    "height": 1350
+  },
+  "source": {
+    "svg": "slide-01.svg",
+    "preview": "preview.png"
+  },
+  "fonts": [
+    {
+      "family": "Inter",
+      "required": true,
+      "fallback": "Arial"
+    }
+  ],
+  "colors": {
+    "background": "#FFFFFF",
+    "primary": "#111111",
+    "secondary": "#666666",
+    "accent": "#D7FF00"
+  },
+  "fields": {
+    "headline": {
+      "type": "text",
+      "required": true,
+      "placeholder": "{{HEADLINE}}",
+      "maxCharacters": 48,
+      "maxWords": 8,
+      "maxLines": 3,
+      "fontSize": {
+        "default": 56,
+        "min": 42,
+        "max": 56
+      }
+    },
+    "body": {
+      "type": "text",
+      "required": true,
+      "placeholder": "{{BODY}}",
+      "maxCharacters": 140,
+      "maxWords": 28,
+      "maxLines": 5,
+      "fontSize": {
+        "default": 30,
+        "min": 24,
+        "max": 30
+      }
+    }
+  },
+  "slides": [
+    { "position": 1, "role": "HOOK", "svg": "slide-01.svg" },
+    { "position": 2, "role": "PROBLEM", "svg": "slide-02.svg" },
+    { "position": 3, "role": "EXPLANATION", "svg": "slide-03.svg" },
+    { "position": 4, "role": "SOLUTION", "svg": "slide-04.svg" },
+    { "position": 5, "role": "BENEFIT", "svg": "slide-05.svg" },
+    { "position": 6, "role": "CTA", "svg": "slide-06.svg" }
+  ],
+  "export": {
+    "format": "png",
+    "quality": 100,
+    "width": 1080,
+    "height": 1350
+  }
+}

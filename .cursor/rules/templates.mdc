@@ -1,0 +1,13 @@
+---
+description: Locked SVG template rules
+globs: "templates/**/*,src/features/templates/**/*"
+alwaysApply: false
+---
+
+# Templates
+
+- Never mutate source SVG files during generation; render from a logical copy.
+- Every declared placeholder must exist in SVG and vice versa.
+- Template `status` must be `ACTIVE` before use; reject `ARCHIVED` / `INVALID`.
+- Placeholder syntax: `{{FIELD_NAME}}`.
+- Locked: coordinates, colors, fonts, margins, logo, frames, decorative elements.

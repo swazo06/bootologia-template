@@ -1,0 +1,12 @@
+---
+description: Testing conventions — mocks only for Meta/AI publish
+globs: "tests/**/*"
+alwaysApply: false
+---
+
+# Testing
+
+- Never publish for real to Facebook or Instagram in tests.
+- Mock AI and Meta providers; prefer DRY_RUN paths.
+- Unit tests live in `tests/unit`; integration in `tests/integration`; e2e in `tests/e2e`.
+- A phase is incomplete if its tests fail.

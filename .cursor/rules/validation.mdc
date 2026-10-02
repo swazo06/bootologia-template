@@ -1,0 +1,13 @@
+---
+description: Content and template validation rules
+globs: "src/lib/validation/**/*,src/features/content-generation/**/*"
+alwaysApply: false
+---
+
+# Validation
+
+- Enforce maxCharacters, maxWords, maxLines per field.
+- Caption ≤ 900 chars; hashtags between 5 and 8.
+- Block forbidden words; require required terms.
+- Detect unverifiable claims; block REVIEW on critical errors.
+- Produce a quality report matching the project schema.

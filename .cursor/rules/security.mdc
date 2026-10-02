@@ -1,0 +1,12 @@
+---
+description: Security requirements for tokens, logs, uploads
+globs: "src/lib/**/*,src/providers/**/*,src/app/api/**/*"
+alwaysApply: false
+---
+
+# Security
+
+- Encrypt tokens at rest with AES-GCM; encryption key server-only.
+- Never log secrets, tokens, or full credentials.
+- Validate MIME by content; limit upload size; block SSRF on URLs.
+- Enforce roles server-side; never expose secrets to the client.
